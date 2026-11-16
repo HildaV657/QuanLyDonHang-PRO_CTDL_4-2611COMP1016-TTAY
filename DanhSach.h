@@ -5,25 +5,47 @@ template <class T>
 class DanhSach
 {
 private:
-	struct SNODE
+	class Node
 	{
-		T Data;
-		SNODE* Next;
+	private:
+		T m_data;
+		Node* m_pNext;
 
-		SNODE(const T& data) : Data(data), Next(nullptr)
+	public:
+		Node(const T& data) : m_data(data), m_pNext(nullptr)
 		{
+		}
+
+		T& getData()
+		{
+			return this->m_data;
+		}
+
+		const T& getData() const
+		{
+			return this->m_data;
+		}
+
+		Node* getNext() const
+		{
+			return this->m_pNext;
+		}
+
+		void setNext(Node* pNext)
+		{
+			this->m_pNext = pNext;
 		}
 	};
 
-	SNODE* m_pHead;
-	SNODE* m_pTail;
+	Node* m_pHead;
+	Node* m_pTail;
 	int m_iSize;
 
 	void sao(const DanhSach& other)
 	{
-		for (SNODE* pNode = other.m_pHead; pNode != nullptr; pNode = pNode->Next)
+		for (Node* pNode = other.m_pHead; pNode != nullptr; pNode = pNode->getNext())
 		{
-			this->themCuoi(pNode->Data);
+			this->themCuoi(pNode->getData());
 		}
 	}
 
@@ -54,14 +76,14 @@ public:
 
 	void themCuoi(const T& data)
 	{
-		SNODE* pNew = new SNODE(data);
+		Node* pNew = new Node(data);
 		if (this->m_pHead == nullptr)
 		{
 			this->m_pHead = pNew;
 		}
 		else
 		{
-			this->m_pTail->Next = pNew;
+			this->m_pTail->setNext(pNew);
 		}
 		this->m_pTail = pNew;
 		++this->m_iSize;
@@ -73,20 +95,20 @@ public:
 		{
 			return false;
 		}
-		SNODE* pPrev = nullptr;
-		SNODE* pCurrent = this->m_pHead;
+		Node* pPrev = nullptr;
+		Node* pCurrent = this->m_pHead;
 		for (int iIndex = 0; iIndex < iViTri; ++iIndex)
 		{
 			pPrev = pCurrent;
-			pCurrent = pCurrent->Next;
+			pCurrent = pCurrent->getNext();
 		}
 		if (pPrev == nullptr)
 		{
-			this->m_pHead = pCurrent->Next;
+			this->m_pHead = pCurrent->getNext();
 		}
 		else
 		{
-			pPrev->Next = pCurrent->Next;
+			pPrev->setNext(pCurrent->getNext());
 		}
 		if (pCurrent == this->m_pTail)
 		{
@@ -100,11 +122,11 @@ public:
 	template <class TDieuKien>
 	T* timDau(TDieuKien dieuKien)
 	{
-		for (SNODE* pNode = this->m_pHead; pNode != nullptr; pNode = pNode->Next)
+		for (Node* pNode = this->m_pHead; pNode != nullptr; pNode = pNode->getNext())
 		{
-			if (dieuKien(pNode->Data))
+			if (dieuKien(pNode->getData()))
 			{
-				return &pNode->Data;
+				return &pNode->getData();
 			}
 		}
 		return nullptr;
@@ -120,9 +142,9 @@ public:
 	int timViTri(TDieuKien dieuKien) const
 	{
 		int iViTri = 0;
-		for (const SNODE* pNode = this->m_pHead; pNode != nullptr; pNode = pNode->Next)
+		for (const Node* pNode = this->m_pHead; pNode != nullptr; pNode = pNode->getNext())
 		{
-			if (dieuKien(pNode->Data))
+			if (dieuKien(pNode->getData()))
 			{
 				return iViTri;
 			}
@@ -134,18 +156,18 @@ public:
 	template <class THanhDong>
 	void duyet(THanhDong hanhDong)
 	{
-		for (SNODE* pNode = this->m_pHead; pNode != nullptr; pNode = pNode->Next)
+		for (Node* pNode = this->m_pHead; pNode != nullptr; pNode = pNode->getNext())
 		{
-			hanhDong(pNode->Data);
+			hanhDong(pNode->getData());
 		}
 	}
 
 	template <class THanhDong>
 	void duyet(THanhDong hanhDong) const
 	{
-		for (const SNODE* pNode = this->m_pHead; pNode != nullptr; pNode = pNode->Next)
+		for (const Node* pNode = this->m_pHead; pNode != nullptr; pNode = pNode->getNext())
 		{
-			hanhDong(pNode->Data);
+			hanhDong(pNode->getData());
 		}
 	}
 
@@ -155,12 +177,12 @@ public:
 		{
 			return nullptr;
 		}
-		SNODE* pNode = this->m_pHead;
+		Node* pNode = this->m_pHead;
 		for (int iIndex = 0; iIndex < iViTri; ++iIndex)
 		{
-			pNode = pNode->Next;
+			pNode = pNode->getNext();
 		}
-		return &pNode->Data;
+		return &pNode->getData();
 	}
 
 	const T* layTaiViTri(const int iViTri) const
@@ -170,7 +192,7 @@ public:
 
 	T* layDau()
 	{
-		return (this->m_pHead == nullptr) ? nullptr : &this->m_pHead->Data;
+		return (this->m_pHead == nullptr) ? nullptr : &this->m_pHead->getData();
 	}
 
 	const T* layDau() const
@@ -192,7 +214,7 @@ public:
 	{
 		while (this->m_pHead != nullptr)
 		{
-			SNODE* pNext = this->m_pHead->Next;
+			Node* pNext = this->m_pHead->getNext();
 			delete this->m_pHead;
 			this->m_pHead = pNext;
 		}
