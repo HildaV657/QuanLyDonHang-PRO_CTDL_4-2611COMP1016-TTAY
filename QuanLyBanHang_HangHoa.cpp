@@ -6,12 +6,9 @@
 
 using namespace std;
 
-namespace
-{
-	const size_t DO_DAI_MA_HANG = 4;
-	const int GIA_BAN_TOI_THIEU = 1;
-	const int SO_LUONG_KHO_TOI_THIEU = 0;   // số lượng nhỏ nhất của hàng trong kho (0 = hết hàng)
-}
+const size_t DO_DAI_MA_HANG = 4;
+const int GIA_BAN_TOI_THIEU = 1;
+const int SO_LUONG_KHO_TOI_THIEU = 0;   // số lượng nhỏ nhất của hàng trong kho (0 = hết hàng)
 
 /**********************************************************
 * @Description Menu quản lý hàng hóa: thêm, xóa, cập nhật số lượng
@@ -117,8 +114,7 @@ void QuanLyBanHang::themHangHoa()
 	{
 		return;
 	}
-	this->m_danhSachHangHoa.themCuoi(HangHoa(strMaHang, strTenHang, strNoiSanXuat, strMauSac,
-		lGiaBan, strNgayNhapKho, static_cast<int>(lSoLuong)));
+	this->_danhSachHangHoa.themCuoi(HangHoa(strMaHang, strTenHang, strNoiSanXuat, strMauSac, lGiaBan, strNgayNhapKho, static_cast<int>(lSoLuong)));
 	this->ghiFileHangHoa();
 	TienIch::inThongBao("Thêm hàng hóa thành công.", MAU_XANH_LA);
 }
@@ -138,16 +134,22 @@ void QuanLyBanHang::xoaHangHoa()
 		return;
 	}
 	const string strMaThuong = TienIch::chuThuong(strMaHang);
-	const int iViTri = this->m_danhSachHangHoa.timViTri([&strMaThuong](const HangHoa& hangHoa)
+	int iViTri = -1;
+	for (int iIndex = 0; iIndex < this->_danhSachHangHoa.getSize(); iIndex++)
 	{
-		return TienIch::chuThuong(hangHoa.getMaHang()) == strMaThuong;
-	});
+		const HangHoa* pHangHoa = this->_danhSachHangHoa.layTaiViTri(iIndex);
+		if (TienIch::chuThuong(pHangHoa->getMaHang()) == strMaThuong)
+		{
+			iViTri = iIndex;
+			break;
+		}
+	}
 	if (iViTri < 0)
 	{
 		TienIch::inLoi("Mã hàng không tồn tại.");
 		return;
 	}
-	this->m_danhSachHangHoa.xoaTaiViTri(iViTri);
+	this->_danhSachHangHoa.xoaTaiViTri(iViTri);
 	this->ghiFileHangHoa();
 	TienIch::inThongBao("Đã xóa hàng hóa.", MAU_XANH_LA);
 }

@@ -7,67 +7,67 @@ template <class T>
 class HangDoi
 {
 private:
-	DanhSach<T> m_danhSachPhanTu;
+	DanhSach<T> _danhSachPhanTu;
 
 public:
 	void enqueue(const T& data)
 	{
-		this->m_danhSachPhanTu.themCuoi(data);
+		this->_danhSachPhanTu.themCuoi(data);
 	}
 
 	bool dequeue()
 	{
-		return this->m_danhSachPhanTu.xoaTaiViTri(0);
+		return this->_danhSachPhanTu.xoaTaiViTri(0);
 	}
 
 	T* front()
 	{
-		return this->m_danhSachPhanTu.layDau();
+		return this->_danhSachPhanTu.layDau();
 	}
 
 	const T* front() const
 	{
-		return this->m_danhSachPhanTu.layDau();
+		return this->_danhSachPhanTu.layDau();
 	}
 
 
 	template <class TDieuKien>
 	T* timDau(TDieuKien dieuKien)
 	{
-		return this->m_danhSachPhanTu.timDau(dieuKien);
+		return this->_danhSachPhanTu.timDau(dieuKien);
 	}
 
 	template <class TDieuKien>
 	const T* timDau(TDieuKien dieuKien) const
 	{
-		return this->m_danhSachPhanTu.timDau(dieuKien);
+		return this->_danhSachPhanTu.timDau(dieuKien);
 	}
 
 	template <class THanhDong>
 	void duyet(THanhDong hanhDong)
 	{
-		this->m_danhSachPhanTu.duyet(hanhDong);
+		this->_danhSachPhanTu.duyet(hanhDong);
 	}
 
 	template <class THanhDong>
 	void duyet(THanhDong hanhDong) const
 	{
-		this->m_danhSachPhanTu.duyet(hanhDong);
+		this->_danhSachPhanTu.duyet(hanhDong);
 	}
 
 	bool isEmpty() const
 	{
-		return this->m_danhSachPhanTu.isEmpty();
+		return this->_danhSachPhanTu.isEmpty();
 	}
 
 	int getSize() const
 	{
-		return this->m_danhSachPhanTu.getSize();
+		return this->_danhSachPhanTu.getSize();
 	}
 
 	void xoaTatCa()
 	{
-		this->m_danhSachPhanTu.xoaTatCa();
+		this->_danhSachPhanTu.xoaTatCa();
 	}
 };
 

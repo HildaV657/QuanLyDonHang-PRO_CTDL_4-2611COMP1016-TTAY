@@ -6,8 +6,6 @@
 #include "ChiTietDon.h"
 #include "DanhSach.h"
 
-using namespace std;
-
 enum TrangThaiDon
 {
     CHO_XU_LY = 0,
@@ -22,10 +20,10 @@ private:
     int _iSoThuTu;
     TrangThaiDon _eTrangThai;
 
-    string _strTenKhach;
-    string _strDiaChi;
-    string _strSoDienThoai;
-    string _strNgayDat;
+    std::string _strTenKhach;
+    std::string _strDiaChi;
+    std::string _strSoDienThoai;
+    std::string _strNgayDat;
 
     long long _lTongTien;
     DanhSach<ChiTietDon> _dsChiTiet;
@@ -33,37 +31,33 @@ private:
 
 public:
 
-    DonHang();
-    DonHang(int iSoThuTu, TrangThaiDon eTrangThai, const string& strTenKhach, const string& strDiaChi, const string& strSoDienThoai, const string& strNgayDat, long long lTongTien);
+    DonHang(const int iSoThuTu = 0, const TrangThaiDon eTrangThai = CHO_XU_LY, const std::string& strTenKhach = "", const std::string& strDiaChi = "", const std::string& strSoDienThoai = "", const std::string& strNgayDat = "", const long long lTongTien = 0);
+    DonHang(const DonHang& donHang);
 
     ~DonHang();
 
     int getSoThuTu() const;
     TrangThaiDon getTrangThai() const;
-    string getTenKhach() const;
-    string getDiaChi() const;
-    string getSoDienThoai() const;
-    string getNgayDat() const;
+    std::string getTenKhach() const;
+    std::string getDiaChi() const;
+    std::string getSoDienThoai() const;
+    std::string getNgayDat() const;
     long long getTongTien() const;
     const DanhSach<ChiTietDon>& getDanhSachChiTiet() const;
 
     void setSoThuTu(const int iSoThuTu);
     void setTrangThai(const TrangThaiDon eTrangThai);
-    void setThongTinKhach(const string& strTenKhach, const string& strDiaChi, const string& strSoDienThoai, const string& strNgayDat);
+    void setThongTinKhach(const std::string& strTenKhach, const std::string& strDiaChi, const std::string& strSoDienThoai, const std::string& strNgayDat);
 
-    bool coMaHang(const string& strMaHang) const;
+    bool coMaHang(const std::string& strMaHang) const;
     
     void themChiTiet(const ChiTietDon& chiTiet);
 
     void capNhatTongTien();
 
-    void xacNhanDonHang();
+    std::string chuyenThanhDong() const;
 
-    void huyDonHang();
-
-    string chuyenThanhDong() const;
-
-    bool docTuDong(const string& strDong);
+    bool docTuDong(const std::string& strDong);
 
     void hienThi() const;
 };

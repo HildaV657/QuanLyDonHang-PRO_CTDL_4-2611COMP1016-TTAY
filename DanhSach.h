@@ -8,42 +8,42 @@ private:
 	class Node
 	{
 	private:
-		T m_data;
-		Node* m_pNext;
+		T _data;
+		Node* _pNext;
 
 	public:
-		Node(const T& data) : m_data(data), m_pNext(nullptr)
+		Node(const T& data) : _data(data), _pNext(nullptr)
 		{
 		}
 
 		T& getData()
 		{
-			return this->m_data;
+			return this->_data;
 		}
 
 		const T& getData() const
 		{
-			return this->m_data;
+			return this->_data;
 		}
 
 		Node* getNext() const
 		{
-			return this->m_pNext;
+			return this->_pNext;
 		}
 
 		void setNext(Node* pNext)
 		{
-			this->m_pNext = pNext;
+			this->_pNext = pNext;
 		}
 	};
 
-	Node* m_pHead;
-	Node* m_pTail;
-	int m_iSize;
+	Node* _pHead;
+	Node* _pTail;
+	int _iSize;
 
 	void sao(const DanhSach& other)
 	{
-		for (Node* pNode = other.m_pHead; pNode != nullptr; pNode = pNode->getNext())
+		for (Node* pNode = other._pHead; pNode != nullptr; pNode = pNode->getNext())
 		{
 			this->themCuoi(pNode->getData());
 		}
@@ -51,11 +51,11 @@ private:
 
 public:
 
-	DanhSach() : m_pHead(nullptr), m_pTail(nullptr), m_iSize(0)
+	DanhSach() : _pHead(nullptr), _pTail(nullptr), _iSize(0)
 	{
 	}
 
-	DanhSach(const DanhSach& other) : m_pHead(nullptr), m_pTail(nullptr), m_iSize(0)
+	DanhSach(const DanhSach& other) : _pHead(nullptr), _pTail(nullptr), _iSize(0)
 	{
 		this->sao(other);
 	}
@@ -77,26 +77,26 @@ public:
 	void themCuoi(const T& data)
 	{
 		Node* pNew = new Node(data);
-		if (this->m_pHead == nullptr)
+		if (this->_pHead == nullptr)
 		{
-			this->m_pHead = pNew;
+			this->_pHead = pNew;
 		}
 		else
 		{
-			this->m_pTail->setNext(pNew);
+			this->_pTail->setNext(pNew);
 		}
-		this->m_pTail = pNew;
-		++this->m_iSize;
+		this->_pTail = pNew;
+		++this->_iSize;
 	}
 
 	bool xoaTaiViTri(const int iViTri)
 	{
-		if (iViTri < 0 || iViTri >= this->m_iSize)
+		if (iViTri < 0 || iViTri >= this->_iSize)
 		{
 			return false;
 		}
 		Node* pPrev = nullptr;
-		Node* pCurrent = this->m_pHead;
+		Node* pCurrent = this->_pHead;
 		for (int iIndex = 0; iIndex < iViTri; ++iIndex)
 		{
 			pPrev = pCurrent;
@@ -104,25 +104,25 @@ public:
 		}
 		if (pPrev == nullptr)
 		{
-			this->m_pHead = pCurrent->getNext();
+			this->_pHead = pCurrent->getNext();
 		}
 		else
 		{
 			pPrev->setNext(pCurrent->getNext());
 		}
-		if (pCurrent == this->m_pTail)
+		if (pCurrent == this->_pTail)
 		{
-			this->m_pTail = pPrev;
+			this->_pTail = pPrev;
 		}
 		delete pCurrent;
-		--this->m_iSize;
+		--this->_iSize;
 		return true;
 	}
 
 	template <class TDieuKien>
 	T* timDau(TDieuKien dieuKien)
 	{
-		for (Node* pNode = this->m_pHead; pNode != nullptr; pNode = pNode->getNext())
+		for (Node* pNode = this->_pHead; pNode != nullptr; pNode = pNode->getNext())
 		{
 			if (dieuKien(pNode->getData()))
 			{
@@ -142,7 +142,7 @@ public:
 	int timViTri(TDieuKien dieuKien) const
 	{
 		int iViTri = 0;
-		for (const Node* pNode = this->m_pHead; pNode != nullptr; pNode = pNode->getNext())
+		for (const Node* pNode = this->_pHead; pNode != nullptr; pNode = pNode->getNext())
 		{
 			if (dieuKien(pNode->getData()))
 			{
@@ -156,7 +156,7 @@ public:
 	template <class THanhDong>
 	void duyet(THanhDong hanhDong)
 	{
-		for (Node* pNode = this->m_pHead; pNode != nullptr; pNode = pNode->getNext())
+		for (Node* pNode = this->_pHead; pNode != nullptr; pNode = pNode->getNext())
 		{
 			hanhDong(pNode->getData());
 		}
@@ -165,7 +165,7 @@ public:
 	template <class THanhDong>
 	void duyet(THanhDong hanhDong) const
 	{
-		for (const Node* pNode = this->m_pHead; pNode != nullptr; pNode = pNode->getNext())
+		for (const Node* pNode = this->_pHead; pNode != nullptr; pNode = pNode->getNext())
 		{
 			hanhDong(pNode->getData());
 		}
@@ -173,11 +173,11 @@ public:
 
 	T* layTaiViTri(const int iViTri)
 	{
-		if (iViTri < 0 || iViTri >= this->m_iSize)
+		if (iViTri < 0 || iViTri >= this->_iSize)
 		{
 			return nullptr;
 		}
-		Node* pNode = this->m_pHead;
+		Node* pNode = this->_pHead;
 		for (int iIndex = 0; iIndex < iViTri; ++iIndex)
 		{
 			pNode = pNode->getNext();
@@ -192,7 +192,7 @@ public:
 
 	T* layDau()
 	{
-		return (this->m_pHead == nullptr) ? nullptr : &this->m_pHead->getData();
+		return (this->_pHead == nullptr) ? nullptr : &this->_pHead->getData();
 	}
 
 	const T* layDau() const
@@ -202,24 +202,24 @@ public:
 
 	int getSize() const
 	{
-		return this->m_iSize;
+		return this->_iSize;
 	}
 
 	bool isEmpty() const
 	{
-		return this->m_iSize == 0;
+		return this->_iSize == 0;
 	}
 
 	void xoaTatCa()
 	{
-		while (this->m_pHead != nullptr)
+		while (this->_pHead != nullptr)
 		{
-			Node* pNext = this->m_pHead->getNext();
-			delete this->m_pHead;
-			this->m_pHead = pNext;
+			Node* pNext = this->_pHead->getNext();
+			delete this->_pHead;
+			this->_pHead = pNext;
 		}
-		this->m_pTail = nullptr;
-		this->m_iSize = 0;
+		this->_pTail = nullptr;
+		this->_iSize = 0;
 	}
 };
 

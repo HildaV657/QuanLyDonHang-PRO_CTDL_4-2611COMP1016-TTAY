@@ -2,23 +2,21 @@
 #define CHITIETDON_H_INCLUDED_
 
 #include <string>
-using namespace std;
 
 class ChiTietDon
 {
 private:
-    string _strMaHang; 
+    std::string _strMaHang;
     int _iSoLuong;
     long long _lThanhTien;
 
 public:
-    ChiTietDon();
-
-    ChiTietDon(string maHang, int soLuong, long long thanhTien);
+    ChiTietDon(const std::string& strMaHang = "", const int iSoLuong = 0, const long long lThanhTien = 0);
+    ChiTietDon(const ChiTietDon& chiTiet);
 
     ~ChiTietDon();
 
-    string getMaHang() const;
+    std::string getMaHang() const;
     int getSoLuong() const;
     long long getThanhTien() const;
 };

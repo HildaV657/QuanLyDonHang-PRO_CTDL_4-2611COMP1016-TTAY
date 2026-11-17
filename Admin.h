@@ -3,27 +3,24 @@
 
 #include <string>
 
-using namespace std;
-
 class Admin
 {
 private:
-    string _strUser;
-    string _strPassword;
-
+    std::string _strUser;
+    std::string _strPassword;
 public:
-    Admin(const string& strUser = "", const string& strPassword = "");
+    Admin(const std::string& strUser = "", const std::string& strPassword = "");
     Admin(const Admin& admin);
     ~Admin();
 
-    string getUser() const;
-    string getPassword() const;
-    void setUser(const string& strUser);
-    void setPassword(const string& strPassword);
+    std::string getUser() const;
+    std::string getPassword() const;
+    void setUser(const std::string& strUser);
+    void setPassword(const std::string& strPassword);
 
-    bool kiemTra(const string& strUser, const string& strPassword) const;
-    string chuyenThanhDong() const;
-    bool docTuDong(const string& strDong);
+    bool kiemTra(const std::string& strUser, const std::string& strPassword) const;
+    std::string chuyenThanhDong() const;
+    bool docTuDong(const std::string& strDong);
 };
 
 #endif

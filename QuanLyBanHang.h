@@ -16,12 +16,12 @@ public:
 	void chay();
 
 private:
-	DanhSach<HangHoa> m_danhSachHangHoa;
-	DanhSach<DonHang> m_danhSachDonHang;
-	DanhSach<Admin> m_danhSachAdmin;
-	HangDoi<int> m_hangDoiChoXuLy;  // lưu số thứ tự các đơn đang chờ xử lý
-	int m_iSoThuTuTiepTheo;
-	bool m_bDangChay;
+	DanhSach<HangHoa> _danhSachHangHoa;
+	DanhSach<DonHang> _danhSachDonHang;
+	DanhSach<Admin> _danhSachAdmin;
+	HangDoi<int> _hangDoiChoXuLy;  // lưu số thứ tự các đơn đang chờ xử lý
+	int _iSoThuTuTiepTheo;
+	bool _bDangChay;
 
 	// Đọc/ghi file
 	void docFileHangHoa();

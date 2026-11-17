@@ -1,30 +1,26 @@
 #include "ChiTietDon.h"
 
-ChiTietDon::ChiTietDon()
-{
-    _strMaHang = "";
-    _iSoLuong = 0;
-    _lThanhTien = 0;
-}
+using namespace std;
 
-ChiTietDon::ChiTietDon(string maHang, int soLuong, long long thanhTien)
-{
-    _strMaHang = maHang;
-    _iSoLuong = soLuong;
-    _lThanhTien = thanhTien;
-}
+ChiTietDon::ChiTietDon(const string& strMaHang, const int iSoLuong, const long long lThanhTien)
+    : _strMaHang(strMaHang), _iSoLuong(iSoLuong), _lThanhTien(lThanhTien)
+{}
 
-ChiTietDon::~ChiTietDon(){};
+ChiTietDon::ChiTietDon(const ChiTietDon& chiTiet)
+    : _strMaHang(chiTiet._strMaHang), _iSoLuong(chiTiet._iSoLuong), _lThanhTien(chiTiet._lThanhTien)
+{}
+
+ChiTietDon::~ChiTietDon() {}
 
 string ChiTietDon::getMaHang() const
 {
-    return _strMaHang;
+    return this->_strMaHang;
 }
 int ChiTietDon::getSoLuong() const
 {
-    return _iSoLuong;
+    return this->_iSoLuong;
 }
 long long ChiTietDon::getThanhTien() const
 {
-    return _lThanhTien;
+    return this->_lThanhTien;
 }

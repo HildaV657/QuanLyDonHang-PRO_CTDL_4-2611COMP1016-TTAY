@@ -1,6 +1,7 @@
 #include "DonHang.h"
 #include "TienIch.h"
 
+#include <exception>
 #include <iostream>
 #include <vector>
 
@@ -9,140 +10,129 @@ using namespace std;
 const size_t SO_TRUONG_CO_DINH = 8;
 const size_t SO_TRUONG_MOI_CHI_TIET = 3;
 
-DonHang::DonHang()
-{
-    _iSoThuTu = 0;
-    _eTrangThai = CHO_XU_LY;
-    _strTenKhach = "";
-    _strDiaChi = "";
-    _strSoDienThoai = "";
-    _strNgayDat = "";
-    _lTongTien = 0;
-}
+/**********************************************************
+* @Description Vị trí các trường cố định trong một dòng của file
+**********************************************************/
+const size_t VI_TRI_SO_THU_TU = 0;
+const size_t VI_TRI_TRANG_THAI = 1;
+const size_t VI_TRI_TEN_KHACH = 2;
+const size_t VI_TRI_DIA_CHI = 3;
+const size_t VI_TRI_SO_DIEN_THOAI = 4;
+const size_t VI_TRI_NGAY_DAT = 5;
+const size_t VI_TRI_TONG_TIEN = 6;
+const size_t VI_TRI_SO_CHI_TIET = 7;
 
-DonHang::DonHang(int soThuTu, TrangThaiDon trangThai, const string& tenKhach, const string& diaChi, const string& soDienThoai, const string& ngayDat, long long tongTien)
-{
-    _iSoThuTu = soThuTu;
-    _eTrangThai = trangThai;
+/**********************************************************
+* @Description Vị trí các trường trong mỗi chi tiết, tính từ đầu chi tiết
+**********************************************************/
+const size_t VI_TRI_CT_MA_HANG = 0;
+const size_t VI_TRI_CT_SO_LUONG = 1;
+const size_t VI_TRI_CT_THANH_TIEN = 2;
 
-    _strTenKhach = tenKhach;
-    _strDiaChi = diaChi;
-    _strSoDienThoai = soDienThoai;
-    _strNgayDat = ngayDat;
+DonHang::DonHang(const int iSoThuTu, const TrangThaiDon eTrangThai, const string& strTenKhach, const string& strDiaChi, const string& strSoDienThoai, const string& strNgayDat, const long long lTongTien)
+    : _iSoThuTu(iSoThuTu), _eTrangThai(eTrangThai), _strTenKhach(strTenKhach), _strDiaChi(strDiaChi), _strSoDienThoai(strSoDienThoai), _strNgayDat(strNgayDat), _lTongTien(lTongTien)
+{}
 
-    _lTongTien = tongTien;
-}
+DonHang::DonHang(const DonHang& donHang)
+    : _iSoThuTu(donHang._iSoThuTu), _eTrangThai(donHang._eTrangThai), _strTenKhach(donHang._strTenKhach), _strDiaChi(donHang._strDiaChi), _strSoDienThoai(donHang._strSoDienThoai), _strNgayDat(donHang._strNgayDat), _lTongTien(donHang._lTongTien), _dsChiTiet(donHang._dsChiTiet)
+{}
 
-DonHang::~DonHang(){}
+DonHang::~DonHang() {}
 
 int DonHang::getSoThuTu() const
 {
-    return _iSoThuTu;
+    return this->_iSoThuTu;
 }
 
 TrangThaiDon DonHang::getTrangThai() const
 {
-    return _eTrangThai;
+    return this->_eTrangThai;
 }
 
 string DonHang::getTenKhach() const
 {
-    return _strTenKhach;
+    return this->_strTenKhach;
 }
 
 string DonHang::getDiaChi() const
 {
-    return _strDiaChi;
+    return this->_strDiaChi;
 }
 
 string DonHang::getSoDienThoai() const
 {
-    return _strSoDienThoai;
+    return this->_strSoDienThoai;
 }
 
 string DonHang::getNgayDat() const
 {
-    return _strNgayDat;
+    return this->_strNgayDat;
 }
 
 long long DonHang::getTongTien() const
 {
-    return _lTongTien;
+    return this->_lTongTien;
 }
 
 const DanhSach<ChiTietDon>& DonHang::getDanhSachChiTiet() const
 {
-    return _dsChiTiet;
+    return this->_dsChiTiet;
 }
 
-void DonHang::setSoThuTu(int soThuTu)
+void DonHang::setSoThuTu(const int iSoThuTu)
 {
-    if (soThuTu >= 0)
+    if (iSoThuTu >= 0)
     {
-        _iSoThuTu = soThuTu;
+        this->_iSoThuTu = iSoThuTu;
     }
 }
 
-void DonHang::setTrangThai(TrangThaiDon trangThai)
+void DonHang::setTrangThai(const TrangThaiDon eTrangThai)
 {
-    if (trangThai >= CHO_XU_LY && trangThai <= DA_HUY)
+    if (eTrangThai >= CHO_XU_LY && eTrangThai <= DA_HUY)
     {
-        _eTrangThai = trangThai;
+        this->_eTrangThai = eTrangThai;
     }
 }
 
-void DonHang::setThongTinKhach( const string& tenKhach, const string& diaChi, const string& soDienThoai, const string& ngayDat)
+void DonHang::setThongTinKhach(const string& strTenKhach, const string& strDiaChi, const string& strSoDienThoai, const string& strNgayDat)
 {
-    _strTenKhach = tenKhach;
-    _strDiaChi = diaChi;
-    _strSoDienThoai = soDienThoai;
-    _strNgayDat = ngayDat;
+    this->_strTenKhach = strTenKhach;
+    this->_strDiaChi = strDiaChi;
+    this->_strSoDienThoai = strSoDienThoai;
+    this->_strNgayDat = strNgayDat;
 }
 
-bool DonHang::coMaHang(const string& maHang) const
+bool DonHang::coMaHang(const string& strMaHang) const
 {
-    string maCanTim = TienIch::chuThuong(maHang);
+    string strMaCanTim = TienIch::chuThuong(strMaHang);
 
-    return _dsChiTiet.timDau(
-        [&maCanTim](const ChiTietDon& chiTiet)
+    for (int iIndex = 0; iIndex < this->_dsChiTiet.getSize(); iIndex++)
+    {
+        const ChiTietDon* pChiTiet = this->_dsChiTiet.layTaiViTri(iIndex);
+        if (TienIch::chuThuong(pChiTiet->getMaHang()) == strMaCanTim)
         {
-            return TienIch::chuThuong(chiTiet.getMaHang()) == maCanTim;
+            return true;
         }
-    ) != nullptr;
+    }
+    return false;
 }
 
 void DonHang::themChiTiet(const ChiTietDon& chiTiet)
 {
-    _dsChiTiet.themCuoi(chiTiet);
+    this->_dsChiTiet.themCuoi(chiTiet);
 
-    capNhatTongTien();
+    this->capNhatTongTien();
 }
 
 void DonHang::capNhatTongTien()
 {
-    _lTongTien = 0;
+    this->_lTongTien = 0;
 
-    _dsChiTiet.duyet(
-        [this](const ChiTietDon& chiTiet)
-        {
-            _lTongTien += chiTiet.getThanhTien();
-        }
-    );
-}
-
-void DonHang::xacNhanDonHang()
-{
-    if (_eTrangThai == CHO_XU_LY)
+    for (int iIndex = 0; iIndex < this->_dsChiTiet.getSize(); iIndex++)
     {
-        _eTrangThai = DA_XU_LY;
-    }
-}
-
-void DonHang::huyDonHang()
-{
-    if (_eTrangThai == CHO_XU_LY)
-    {
-        _eTrangThai = DA_HUY;
+        const ChiTietDon* pChiTiet = this->_dsChiTiet.layTaiViTri(iIndex);
+        this->_lTongTien += pChiTiet->getThanhTien();
     }
 }
 
@@ -150,41 +140,39 @@ string DonHang::chuyenThanhDong() const
 {
     string strDong = "";
 
-    strDong = to_string(_iSoThuTu)
+    strDong = to_string(this->_iSoThuTu)
         + DAU_NGAN_CACH
-        + to_string(static_cast<int>(_eTrangThai))
+        + to_string(static_cast<int>(this->_eTrangThai))
         + DAU_NGAN_CACH
-        + _strTenKhach
+        + this->_strTenKhach
         + DAU_NGAN_CACH
-        + _strDiaChi
+        + this->_strDiaChi
         + DAU_NGAN_CACH
-        + _strSoDienThoai
+        + this->_strSoDienThoai
         + DAU_NGAN_CACH
-        + _strNgayDat
+        + this->_strNgayDat
         + DAU_NGAN_CACH
-        + to_string(_lTongTien)
+        + to_string(this->_lTongTien)
         + DAU_NGAN_CACH
-        + to_string(_dsChiTiet.getSize());
+        + to_string(this->_dsChiTiet.getSize());
 
-    _dsChiTiet.duyet(
-        [&strDong](const ChiTietDon& chiTiet)
-        {
-            strDong += DAU_NGAN_CACH
-                + chiTiet.getMaHang()
-                + DAU_NGAN_CACH
-                + to_string(chiTiet.getSoLuong())
-                + DAU_NGAN_CACH
-                + to_string(chiTiet.getThanhTien());
-        }
-    );
+    for (int iIndex = 0; iIndex < this->_dsChiTiet.getSize(); iIndex++)
+    {
+        const ChiTietDon* pChiTiet = this->_dsChiTiet.layTaiViTri(iIndex);
+        strDong += DAU_NGAN_CACH
+            + pChiTiet->getMaHang()
+            + DAU_NGAN_CACH
+            + to_string(pChiTiet->getSoLuong())
+            + DAU_NGAN_CACH
+            + to_string(pChiTiet->getThanhTien());
+    }
 
     return strDong;
 }
 
 bool DonHang::docTuDong(const string& strDong)
 {
-    vector<string> vecTruong =
-        TienIch::tach(strDong, DAU_NGAN_CACH);
+    vector<string> vecTruong = TienIch::tach(strDong, DAU_NGAN_CACH);
 
     if (vecTruong.size() < SO_TRUONG_CO_DINH)
     {
@@ -193,71 +181,50 @@ bool DonHang::docTuDong(const string& strDong)
 
     try
     {
-        int soThuTu = stoi(vecTruong[0]);
-        int trangThai = stoi(vecTruong[1]);
-        long long tongTien = stoll(vecTruong[6]);
+        int iSoThuTu = stoi(vecTruong[VI_TRI_SO_THU_TU]);
+        int iTrangThai = stoi(vecTruong[VI_TRI_TRANG_THAI]);
+        long long lTongTien = stoll(vecTruong[VI_TRI_TONG_TIEN]);
+        int iSoChiTiet = stoi(vecTruong[VI_TRI_SO_CHI_TIET]);
 
-        int soChiTiet = stoi(vecTruong[7]);
+        bool bGiaTriHopLe = iSoThuTu >= 0 && lTongTien >= 0 && iSoChiTiet >= 0
+            && iTrangThai >= CHO_XU_LY && iTrangThai <= DA_HUY;
+        size_t iSoTruongCanCo = SO_TRUONG_CO_DINH + SO_TRUONG_MOI_CHI_TIET * static_cast<size_t>(iSoChiTiet);
 
-        if (soThuTu < 0 || tongTien < 0 || soChiTiet < 0)
+        if (!bGiaTriHopLe || vecTruong.size() != iSoTruongCanCo)
         {
             return false;
         }
 
-        if (trangThai < CHO_XU_LY || trangThai > DA_HUY)
+        DanhSach<ChiTietDon> dsTam;
+        long long lTongTienTinhDuoc = 0;
+
+        for (int iIndex = 0; iIndex < iSoChiTiet; iIndex++)
         {
-            return false;
-        }
+            size_t iViTri = SO_TRUONG_CO_DINH + iIndex * SO_TRUONG_MOI_CHI_TIET;
+            string strMaHang = vecTruong[iViTri + VI_TRI_CT_MA_HANG];
+            int iSoLuong = stoi(vecTruong[iViTri + VI_TRI_CT_SO_LUONG]);
+            long long lThanhTien = stoll(vecTruong[iViTri + VI_TRI_CT_THANH_TIEN]);
 
-        size_t soTruongCanCo = SO_TRUONG_CO_DINH + SO_TRUONG_MOI_CHI_TIET * soChiTiet;
-
-        if (vecTruong.size() != soTruongCanCo)
-        {
-            return false;
-        }
-
-        DanhSach<ChiTietDon> danhSachTam;
-
-        long long tongTienTinhDuoc = 0;
-
-        for (int i = 0; i < soChiTiet; i++)
-        {
-            size_t viTri = SO_TRUONG_CO_DINH + i * SO_TRUONG_MOI_CHI_TIET;
-
-            string maHang = vecTruong[viTri];
-
-            int soLuong = stoi(vecTruong[viTri + 1]);
-
-            long long thanhTien = stoll(vecTruong[viTri + 2]);
-
-            if (soLuong <= 0 || thanhTien < 0)
+            if (iSoLuong <= 0 || lThanhTien < 0)
             {
                 return false;
             }
-
-            ChiTietDon chiTiet(maHang,soLuong,thanhTien);
-
-            danhSachTam.themCuoi(chiTiet);
-
-            tongTienTinhDuoc += thanhTien;
+            dsTam.themCuoi(ChiTietDon(strMaHang, iSoLuong, lThanhTien));
+            lTongTienTinhDuoc += lThanhTien;
         }
 
-        if (tongTienTinhDuoc != tongTien)
+        if (lTongTienTinhDuoc != lTongTien)
         {
             return false;
         }
 
-        _iSoThuTu = soThuTu;
-
-        _eTrangThai = static_cast<TrangThaiDon>(trangThai);
-
-        setThongTinKhach(vecTruong[2], vecTruong[3], vecTruong[4], vecTruong[5]);
-
-        _dsChiTiet = danhSachTam;
-
-        _lTongTien = tongTienTinhDuoc;
+        this->_iSoThuTu = iSoThuTu;
+        this->_eTrangThai = static_cast<TrangThaiDon>(iTrangThai);
+        this->setThongTinKhach(vecTruong[VI_TRI_TEN_KHACH], vecTruong[VI_TRI_DIA_CHI], vecTruong[VI_TRI_SO_DIEN_THOAI], vecTruong[VI_TRI_NGAY_DAT]);
+        this->_dsChiTiet = dsTam;
+        this->_lTongTien = lTongTienTinhDuoc;
     }
-    catch (...)
+    catch (const exception&)
     {
         return false;
     }
@@ -269,7 +236,7 @@ void DonHang::hienThi() const
 {
     string strTrangThai = "Đang chờ xử lý";
 
-    switch (_eTrangThai)
+    switch (this->_eTrangThai)
     {
     case DA_XU_LY:
         strTrangThai = "Đã xử lý";
@@ -285,21 +252,20 @@ void DonHang::hienThi() const
 
     TienIch::datMau(MAU_XANH_DUONG);
 
-    cout << "Đơn hàng số " << _iSoThuTu << " - " << strTrangThai << endl;
+    cout << "Đơn hàng số " << this->_iSoThuTu << " - " << strTrangThai << endl;
 
     TienIch::datMau(MAU_MAC_DINH);
 
-    cout << "Khách hàng : " << _strTenKhach << endl;
-    cout << "Địa chỉ    : " << _strDiaChi << endl;
-    cout << "Điện thoại : " << _strSoDienThoai << endl;
-    cout << "Ngày đặt   : " << _strNgayDat << endl;
+    cout << "Khách hàng : " << this->_strTenKhach << endl;
+    cout << "Địa chỉ    : " << this->_strDiaChi << endl;
+    cout << "Điện thoại : " << this->_strSoDienThoai << endl;
+    cout << "Ngày đặt   : " << this->_strNgayDat << endl;
 
-    _dsChiTiet.duyet(
-        [](const ChiTietDon& chiTiet)
-        {
-            cout << "  - Mã hàng " << chiTiet.getMaHang() << ", số lượng " << chiTiet.getSoLuong() << ", thành tiền " << TienIch::dinhDangTien(chiTiet.getThanhTien()) << endl;
-        }
-    );
+    for (int iIndex = 0; iIndex < this->_dsChiTiet.getSize(); iIndex++)
+    {
+        const ChiTietDon* pChiTiet = this->_dsChiTiet.layTaiViTri(iIndex);
+        cout << "  - Mã hàng " << pChiTiet->getMaHang() << ", số lượng " << pChiTiet->getSoLuong() << ", thành tiền " << TienIch::dinhDangTien(pChiTiet->getThanhTien()) << endl;
+    }
 
-    cout << "Tổng tiền  : " << TienIch::dinhDangTien(_lTongTien) << endl;
+    cout << "Tổng tiền  : " << TienIch::dinhDangTien(this->_lTongTien) << endl;
 }

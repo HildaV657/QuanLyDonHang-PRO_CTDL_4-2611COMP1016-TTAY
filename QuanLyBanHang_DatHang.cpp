@@ -5,62 +5,59 @@
 
 using namespace std;
 
-namespace
+const string TRA_LOI_CO = "c";
+const int SO_LUONG_DAT_TOI_THIEU = 1;
+const int SO_LUONG_KHO_TOI_THIEU = 0;   // số lượng nhỏ nhất của hàng trong kho (0 = hết hàng)
+const size_t SO_DIEN_THOAI_TOI_THIEU = 9;
+const size_t SO_DIEN_THOAI_TOI_DA = 11;
+
+/**********************************************************
+* @Description Nhập và kiểm tra số điện thoại
+*
+* @return true nếu chỉ gồm chữ số và dài từ 9 đến 11 ký tự
+**********************************************************/
+static bool nhapSoDienThoai(string& strSoDienThoai)
 {
-	const string TRA_LOI_CO = "c";
-	const int SO_LUONG_DAT_TOI_THIEU = 1;
-	const int SO_LUONG_KHO_TOI_THIEU = 0;   // số lượng nhỏ nhất của hàng trong kho (0 = hết hàng)
-	const size_t SO_DIEN_THOAI_TOI_THIEU = 9;
-	const size_t SO_DIEN_THOAI_TOI_DA = 11;
-
-	/**********************************************************
-	* @Description Nhập và kiểm tra số điện thoại
-	*
-	* @return true nếu chỉ gồm chữ số và dài từ 9 đến 11 ký tự
-	**********************************************************/
-	bool nhapSoDienThoai(string& strSoDienThoai)
+	if (!TienIch::docChuoi("Số điện thoại: ", strSoDienThoai))
 	{
-		if (!TienIch::docChuoi("Số điện thoại: ", strSoDienThoai))
-		{
-			return false;
-		}
-		const bool bHopLe = TienIch::laSoNguyen(strSoDienThoai)
-			&& strSoDienThoai.size() >= SO_DIEN_THOAI_TOI_THIEU
-			&& strSoDienThoai.size() <= SO_DIEN_THOAI_TOI_DA;
-		if (!bHopLe)
-		{
-			TienIch::inLoi("Số điện thoại phải gồm " + to_string(SO_DIEN_THOAI_TOI_THIEU)
-				+ " đến " + to_string(SO_DIEN_THOAI_TOI_DA) + " chữ số.");
-			return false;
-		}
-		return true;
+		return false;
 	}
-
-	/**********************************************************
-	* @Description Kiểm tra một mặt hàng có đặt thêm vào đơn được không
-	*
-	* @return true nếu mã hàng tồn tại, còn hàng và chưa có trong đơn
-	* @attention Đã in lỗi nếu trả về false
-	**********************************************************/
-	bool kiemTraMatHangDatDuoc(const HangHoa* pHangHoa, const DonHang& donHang)
+	const bool bHopLe = TienIch::laSoNguyen(strSoDienThoai)
+		&& strSoDienThoai.size() >= SO_DIEN_THOAI_TOI_THIEU
+		&& strSoDienThoai.size() <= SO_DIEN_THOAI_TOI_DA;
+	if (!bHopLe)
 	{
-		if (pHangHoa == nullptr)
-		{
-			TienIch::inLoi("Mã hàng không tồn tại.");
-			return false;
-		}
-		if (pHangHoa->getSoLuong() <= SO_LUONG_KHO_TOI_THIEU)
-		{
-			TienIch::inLoi("Mặt hàng này đã hết hàng.");
-			return false;
-		}
-		if (donHang.coMaHang(pHangHoa->getMaHang()))
-		{
-			TienIch::inLoi("Mã hàng này đã có trong đơn.");
-			return false;
-		}
-		return true;
+		TienIch::inLoi("Số điện thoại phải gồm " + to_string(SO_DIEN_THOAI_TOI_THIEU)
+			+ " đến " + to_string(SO_DIEN_THOAI_TOI_DA) + " chữ số.");
+		return false;
 	}
+	return true;
+}
+
+/**********************************************************
+* @Description Kiểm tra một mặt hàng có đặt thêm vào đơn được không
+*
+* @return true nếu mã hàng tồn tại, còn hàng và chưa có trong đơn
+* @attention Đã in lỗi nếu trả về false
+**********************************************************/
+static bool kiemTraMatHangDatDuoc(const HangHoa* pHangHoa, const DonHang& donHang)
+{
+	if (pHangHoa == nullptr)
+	{
+		TienIch::inLoi("Mã hàng không tồn tại.");
+		return false;
+	}
+	if (pHangHoa->getSoLuong() <= SO_LUONG_KHO_TOI_THIEU)
+	{
+		TienIch::inLoi("Mặt hàng này đã hết hàng.");
+		return false;
+	}
+	if (donHang.coMaHang(pHangHoa->getMaHang()))
+	{
+		TienIch::inLoi("Mã hàng này đã có trong đơn.");
+		return false;
+	}
+	return true;
 }
 
 /**********************************************************
@@ -79,10 +76,10 @@ void QuanLyBanHang::datHang()
 		TienIch::inThongBao("Đã hủy việc đặt hàng.", MAU_DO);
 		return;
 	}
-	donHang.setSoThuTu(this->m_iSoThuTuTiepTheo);
-	++this->m_iSoThuTuTiepTheo;
-	this->m_danhSachDonHang.themCuoi(donHang);
-	this->m_hangDoiChoXuLy.enqueue(donHang.getSoThuTu());
+	donHang.setSoThuTu(this->_iSoThuTuTiepTheo);
+	++this->_iSoThuTuTiepTheo;
+	this->_danhSachDonHang.themCuoi(donHang);
+	this->_hangDoiChoXuLy.enqueue(donHang.getSoThuTu());
 	this->ghiFileDonHang();
 	TienIch::inThongBao("Đơn hàng đang chờ xử lý", MAU_XANH_LA);
 }

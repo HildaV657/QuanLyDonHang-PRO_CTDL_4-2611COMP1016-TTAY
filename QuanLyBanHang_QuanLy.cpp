@@ -6,46 +6,43 @@
 
 using namespace std;
 
-namespace
+const int SO_LAN_DANG_NHAP_TOI_DA = 3;
+
+/**********************************************************
+* @Description In khung đăng nhập hệ thống
+**********************************************************/
+static void hienThiManHinhDangNhap()
 {
-	const int SO_LAN_DANG_NHAP_TOI_DA = 3;
+	TienIch::xoaManHinh();
+	TienIch::inThongBao("  * * * * * * * * * * * * * * * * * * * * *", MAU_VANG);
+	TienIch::inThongBao("  *          DANG NHAP HE THONG           *", MAU_XANH_LA);
+	TienIch::inThongBao("  * * * * * * * * * * * * * * * * * * * * *", MAU_VANG);
+	TienIch::inThongBao("  (Nhấn ESC để thoát)\n", MAU_MAC_DINH);
+}
 
-	/**********************************************************
-	* @Description In khung đăng nhập hệ thống
-	**********************************************************/
-	void hienThiManHinhDangNhap()
+/**********************************************************
+* @Description Nhập user (hiện chữ) và password (hiện dấu *)
+*
+* @return false nếu người dùng nhấn ESC
+**********************************************************/
+static bool nhapTaiKhoan(string& strUser, string& strPassword)
+{
+	TienIch::datMau(MAU_XANH_LA);
+	cout << "    User: ";
+	TienIch::datMau(MAU_TRANG);
+	if (!TienIch::docPhim(strUser, false))
 	{
-		TienIch::xoaManHinh();
-		TienIch::inThongBao("  * * * * * * * * * * * * * * * * * * * * *", MAU_VANG);
-		TienIch::inThongBao("  *          DANG NHAP HE THONG           *", MAU_XANH_LA);
-		TienIch::inThongBao("  * * * * * * * * * * * * * * * * * * * * *", MAU_VANG);
-		TienIch::inThongBao("  (Nhấn ESC để thoát)\n", MAU_MAC_DINH);
+		return false;
 	}
-
-	/**********************************************************
-	* @Description Nhập user (hiện chữ) và password (hiện dấu *)
-	*
-	* @return false nếu người dùng nhấn ESC
-	**********************************************************/
-	bool nhapTaiKhoan(string& strUser, string& strPassword)
+	TienIch::datMau(MAU_XANH_LA);
+	cout << "    Password: ";
+	TienIch::datMau(MAU_TRANG);
+	if (!TienIch::docPhim(strPassword, true))
 	{
-		TienIch::datMau(MAU_XANH_LA);
-		cout << "    User: ";
-		TienIch::datMau(MAU_TRANG);
-		if (!TienIch::docPhim(strUser, false))
-		{
-			return false;
-		}
-		TienIch::datMau(MAU_XANH_LA);
-		cout << "    Password: ";
-		TienIch::datMau(MAU_TRANG);
-		if (!TienIch::docPhim(strPassword, true))
-		{
-			return false;
-		}
-		TienIch::datMau(MAU_MAC_DINH);
-		return true;
+		return false;
 	}
+	TienIch::datMau(MAU_MAC_DINH);
+	return true;
 }
 
 /**********************************************************
@@ -75,7 +72,7 @@ bool QuanLyBanHang::dangNhap()
 		string strPassword;
 		if (!nhapTaiKhoan(strUser, strPassword))
 		{
-			this->m_bDangChay = false;
+			this->_bDangChay = false;
 			return false;
 		}
 		if (this->kiemTraTaiKhoan(strUser, strPassword))
@@ -87,7 +84,7 @@ bool QuanLyBanHang::dangNhap()
 		TienIch::tamDung();
 	}
 	TienIch::inLoi("Nhập sai " + to_string(SO_LAN_DANG_NHAP_TOI_DA) + " lần. Thoát khỏi hệ thống.");
-	this->m_bDangChay = false;
+	this->_bDangChay = false;
 	return false;
 }
 
@@ -98,11 +95,15 @@ bool QuanLyBanHang::dangNhap()
 **********************************************************/
 bool QuanLyBanHang::kiemTraTaiKhoan(const string& strUser, const string& strPassword) const
 {
-	const Admin* pAdmin = this->m_danhSachAdmin.timDau([&strUser, &strPassword](const Admin& admin)
+	for (int iIndex = 0; iIndex < this->_danhSachAdmin.getSize(); iIndex++)
 	{
-		return admin.kiemTra(strUser, strPassword);
-	});
-	return pAdmin != nullptr;
+		const Admin* pAdmin = this->_danhSachAdmin.layTaiViTri(iIndex);
+		if (pAdmin->kiemTra(strUser, strPassword))
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 /**********************************************************
@@ -115,7 +116,7 @@ void QuanLyBanHang::menuQuanLy()
 	{
 		TienIch::xoaManHinh();
 		TienIch::inThongBao("=== MENU QUẢN LÝ ===", MAU_VANG);
-		TienIch::inThongBao("  1. Xử lý đơn hàng (" + to_string(this->m_hangDoiChoXuLy.getSize()) + " đơn đang chờ)", MAU_TRANG);
+		TienIch::inThongBao("  1. Xử lý đơn hàng (" + to_string(this->_hangDoiChoXuLy.getSize()) + " đơn đang chờ)", MAU_TRANG);
 		TienIch::inThongBao("  2. Quản lý hàng hóa", MAU_TRANG);
 		TienIch::inThongBao("  0. Quay lại menu chính", MAU_TRANG);
 		const string strLuaChon = TienIch::docLuaChon("Chọn chức năng: ");
@@ -147,16 +148,17 @@ void QuanLyBanHang::menuQuanLy()
 **********************************************************/
 bool QuanLyBanHang::kiemTraDuHang(const DonHang& donHang) const
 {
-	bool bDuHang = true;
-	donHang.getDanhSachChiTiet().duyet([this, &bDuHang](const ChiTietDon& chiTiet)
+	const DanhSach<ChiTietDon>& dsChiTiet = donHang.getDanhSachChiTiet();
+	for (int iIndex = 0; iIndex < dsChiTiet.getSize(); iIndex++)
 	{
-		const HangHoa* pHangHoa = this->timHangHoa(chiTiet.getMaHang());
-		if (pHangHoa == nullptr || pHangHoa->getSoLuong() < chiTiet.getSoLuong())
+		const ChiTietDon* pChiTiet = dsChiTiet.layTaiViTri(iIndex);
+		const HangHoa* pHangHoa = this->timHangHoa(pChiTiet->getMaHang());
+		if (pHangHoa == nullptr || pHangHoa->getSoLuong() < pChiTiet->getSoLuong())
 		{
-			bDuHang = false;
+			return false;
 		}
-	});
-	return bDuHang;
+	}
+	return true;
 }
 
 /**********************************************************
@@ -170,13 +172,13 @@ void QuanLyBanHang::xuLyDonHang()
 {
 	TienIch::xoaManHinh();
 	TienIch::inThongBao("=== XỬ LÝ ĐƠN HÀNG ===", MAU_VANG);
-	if (this->m_hangDoiChoXuLy.isEmpty())
+	if (this->_hangDoiChoXuLy.isEmpty())
 	{
 		TienIch::inThongBao("Không có đơn hàng nào đang chờ xử lý.", MAU_DO);
 		return;
 	}
-	DonHang* pDonHang = this->timDonHang(*this->m_hangDoiChoXuLy.front());
-	this->m_hangDoiChoXuLy.dequeue();
+	DonHang* pDonHang = this->timDonHang(*this->_hangDoiChoXuLy.front());
+	this->_hangDoiChoXuLy.dequeue();
 	if (pDonHang == nullptr)
 	{
 		TienIch::inLoi("Không tìm thấy dữ liệu đơn hàng.");
@@ -202,11 +204,13 @@ void QuanLyBanHang::xuLyDonHang()
 **********************************************************/
 void QuanLyBanHang::hoanTatDonHang(DonHang& donHang)
 {
-	donHang.getDanhSachChiTiet().duyet([this](const ChiTietDon& chiTiet)
+	const DanhSach<ChiTietDon>& dsChiTiet = donHang.getDanhSachChiTiet();
+	for (int iIndex = 0; iIndex < dsChiTiet.getSize(); iIndex++)
 	{
-		HangHoa* pHangHoa = this->timHangHoa(chiTiet.getMaHang());
-		pHangHoa->setSoLuong(pHangHoa->getSoLuong() - chiTiet.getSoLuong());
-	});
+		const ChiTietDon* pChiTiet = dsChiTiet.layTaiViTri(iIndex);
+		HangHoa* pHangHoa = this->timHangHoa(pChiTiet->getMaHang());
+		pHangHoa->setSoLuong(pHangHoa->getSoLuong() - pChiTiet->getSoLuong());
+	}
 	donHang.setTrangThai(DA_XU_LY);
 	donHang.hienThi();
 	TienIch::inThongBao("Đã xử lý xong đơn hàng và cập nhật số lượng hàng hóa.", MAU_XANH_LA);

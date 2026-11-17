@@ -8,79 +8,76 @@
 
 using namespace std;
 
-namespace
+const string FILE_HANG_HOA = "HangHoa.txt";
+const string FILE_DON_HANG = "DonHang.txt";
+const string FILE_ADMIN = "Admin.txt";
+const string ADMIN_MAC_DINH = "admin";
+const string MAT_KHAU_MAC_DINH = "123456";
+const int SO_THU_TU_DAU_TIEN = 1;
+
+// Các lựa chọn của từng menu
+enum class MenuChinh
 {
-	const string FILE_HANG_HOA = "HangHoa.txt";
-	const string FILE_DON_HANG = "DonHang.txt";
-	const string FILE_ADMIN = "Admin.txt";
-	const string ADMIN_MAC_DINH = "admin";
-	const string MAT_KHAU_MAC_DINH = "123456";
-	const int SO_THU_TU_DAU_TIEN = 1;
+	KHONG_HOP_LE = -1,
+	THOAT = 0,
+	HIEN_THI_HANG_HOA = 1,
+	TIM_KIEM_HANG_HOA = 2,
+	DAT_HANG = 3,
+	QUAN_LY = 4
+};
 
-	// Các lựa chọn của từng menu
-	enum class MenuChinh
+template <class TMenu>
+static TMenu chuyenSangMenu(const string& strNhap, const TMenu eNhoNhat, const TMenu eLonNhat)
+{
+	try
 	{
-		KHONG_HOP_LE = -1,
-		THOAT = 0,
-		HIEN_THI_HANG_HOA = 1,
-		TIM_KIEM_HANG_HOA = 2,
-		DAT_HANG = 3,
-		QUAN_LY = 4
-	};
+		const int iLuaChon = stoi(strNhap);
+		const bool bTrongMenu = iLuaChon >= static_cast<int>(eNhoNhat)
+			&& iLuaChon <= static_cast<int>(eLonNhat);
+		if (bTrongMenu && to_string(iLuaChon) == strNhap)
+		{
+			return static_cast<TMenu>(iLuaChon);
+		}
+	}
+	catch (const exception&)
+	{
 
-	template <class TMenu>
-	TMenu chuyenSangMenu(const string& strNhap, const TMenu eNhoNhat, const TMenu eLonNhat)
-	{
-		try
-		{
-			const int iLuaChon = stoi(strNhap);
-			const bool bTrongMenu = iLuaChon >= static_cast<int>(eNhoNhat)
-				&& iLuaChon <= static_cast<int>(eLonNhat);
-			if (bTrongMenu && to_string(iLuaChon) == strNhap)
-			{
-				return static_cast<TMenu>(iLuaChon);
-			}
-		}
-		catch (const exception&)
-		{
-
-		}
-		return TMenu::KHONG_HOP_LE;
 	}
-	template <class T>
-	void docDanhSachTuFile(const string& strTenFile, DanhSach<T>& danhSach)
+	return TMenu::KHONG_HOP_LE;
+}
+template <class T>
+static void docDanhSachTuFile(const string& strTenFile, DanhSach<T>& danhSach)
+{
+	ifstream ifsFile(strTenFile);
+	string strDong;
+	while (getline(ifsFile, strDong))
 	{
-		ifstream ifsFile(strTenFile);
-		string strDong;
-		while (getline(ifsFile, strDong))
+		strDong = TienIch::catKhoangTrang(strDong);
+		T phanTu;
+		if (!strDong.empty() && phanTu.docTuDong(strDong))
 		{
-			strDong = TienIch::catKhoangTrang(strDong);
-			T phanTu;
-			if (!strDong.empty() && phanTu.docTuDong(strDong))
-			{
-				danhSach.themCuoi(phanTu);
-			}
+			danhSach.themCuoi(phanTu);
 		}
-		ifsFile.close();
 	}
-	template <class T>
-	void ghiDanhSachRaFile(const string& strTenFile, const DanhSach<T>& danhSach)
+	ifsFile.close();
+}
+template <class T>
+static void ghiDanhSachRaFile(const string& strTenFile, const DanhSach<T>& danhSach)
+{
+	ofstream ofsFile(strTenFile);
+	if (!ofsFile.is_open())
 	{
-		ofstream ofsFile(strTenFile);
-		if (!ofsFile.is_open())
-		{
-			TienIch::inLoi("Không ghi được file " + strTenFile + ".");
-			return;
-		}
-		danhSach.duyet([&ofsFile](const T& phanTu)
-		{
-			ofsFile << phanTu.chuyenThanhDong() << endl;
-		});
-		ofsFile.close();
+		TienIch::inLoi("Không ghi được file " + strTenFile + ".");
+		return;
 	}
+	for (int iIndex = 0; iIndex < danhSach.getSize(); iIndex++)
+	{
+		ofsFile << danhSach.layTaiViTri(iIndex)->chuyenThanhDong() << endl;
+	}
+	ofsFile.close();
 }
 
-QuanLyBanHang::QuanLyBanHang() : m_iSoThuTuTiepTheo(SO_THU_TU_DAU_TIEN), m_bDangChay(true)
+QuanLyBanHang::QuanLyBanHang() : _iSoThuTuTiepTheo(SO_THU_TU_DAU_TIEN), _bDangChay(true)
 {
 	this->docFileHangHoa();
 	this->docFileDonHang();
@@ -89,7 +86,7 @@ QuanLyBanHang::QuanLyBanHang() : m_iSoThuTuTiepTheo(SO_THU_TU_DAU_TIEN), m_bDang
 
 void QuanLyBanHang::chay()
 {
-	while (this->m_bDangChay)
+	while (this->_bDangChay)
 	{
 		this->hienThiMenuChinh();
 		const MenuChinh eLuaChon = chuyenSangMenu(TienIch::docLuaChon("Chọn chức năng: "),
@@ -109,13 +106,13 @@ void QuanLyBanHang::chay()
 				this->quanLy();
 				break;
 			case MenuChinh::THOAT:
-				this->m_bDangChay = false;
+				this->_bDangChay = false;
 				break;
 			default:
 				TienIch::inLoi("Lựa chọn không hợp lệ.");
 				break;
 		}
-		if (this->m_bDangChay)
+		if (this->_bDangChay)
 		{
 			TienIch::tamDung();
 		}
@@ -127,7 +124,7 @@ void QuanLyBanHang::chay()
 
 void QuanLyBanHang::docFileHangHoa()
 {
-	docDanhSachTuFile(FILE_HANG_HOA, this->m_danhSachHangHoa);
+	docDanhSachTuFile(FILE_HANG_HOA, this->_danhSachHangHoa);
 }
 void QuanLyBanHang::docFileDonHang()
 {
@@ -141,38 +138,38 @@ void QuanLyBanHang::docFileDonHang()
 		{
 			continue;
 		}
-		this->m_danhSachDonHang.themCuoi(donHang);
+		this->_danhSachDonHang.themCuoi(donHang);
 		if (donHang.getTrangThai() == CHO_XU_LY)
 		{
-			this->m_hangDoiChoXuLy.enqueue(donHang.getSoThuTu());
+			this->_hangDoiChoXuLy.enqueue(donHang.getSoThuTu());
 		}
-		if (donHang.getSoThuTu() >= this->m_iSoThuTuTiepTheo)
+		if (donHang.getSoThuTu() >= this->_iSoThuTuTiepTheo)
 		{
-			this->m_iSoThuTuTiepTheo = donHang.getSoThuTu() + 1;
+			this->_iSoThuTuTiepTheo = donHang.getSoThuTu() + 1;
 		}
 	}
 	ifsFile.close();
 }
 void QuanLyBanHang::docFileAdmin()
 {
-	docDanhSachTuFile(FILE_ADMIN, this->m_danhSachAdmin);
-	if (this->m_danhSachAdmin.isEmpty())
+	docDanhSachTuFile(FILE_ADMIN, this->_danhSachAdmin);
+	if (this->_danhSachAdmin.isEmpty())
 	{
-		this->m_danhSachAdmin.themCuoi(Admin(ADMIN_MAC_DINH, MAT_KHAU_MAC_DINH));
+		this->_danhSachAdmin.themCuoi(Admin(ADMIN_MAC_DINH, MAT_KHAU_MAC_DINH));
 		this->ghiFileAdmin();
 	}
 }
 void QuanLyBanHang::ghiFileHangHoa() const
 {
-	ghiDanhSachRaFile(FILE_HANG_HOA, this->m_danhSachHangHoa);
+	ghiDanhSachRaFile(FILE_HANG_HOA, this->_danhSachHangHoa);
 }
 void QuanLyBanHang::ghiFileDonHang() const
 {
-	ghiDanhSachRaFile(FILE_DON_HANG, this->m_danhSachDonHang);
+	ghiDanhSachRaFile(FILE_DON_HANG, this->_danhSachDonHang);
 }
 void QuanLyBanHang::ghiFileAdmin() const
 {
-	ghiDanhSachRaFile(FILE_ADMIN, this->m_danhSachAdmin);
+	ghiDanhSachRaFile(FILE_ADMIN, this->_danhSachAdmin);
 }
 
 // ==================== Tìm kiếm nội bộ ====================
@@ -185,10 +182,15 @@ HangHoa* QuanLyBanHang::timHangHoa(const string& strMaHang)
 const HangHoa* QuanLyBanHang::timHangHoa(const string& strMaHang) const
 {
 	const string strMaThuong = TienIch::chuThuong(strMaHang);
-	return this->m_danhSachHangHoa.timDau([&strMaThuong](const HangHoa& hangHoa)
+	for (int iIndex = 0; iIndex < this->_danhSachHangHoa.getSize(); iIndex++)
 	{
-		return TienIch::chuThuong(hangHoa.getMaHang()) == strMaThuong;
-	});
+		const HangHoa* pHangHoa = this->_danhSachHangHoa.layTaiViTri(iIndex);
+		if (TienIch::chuThuong(pHangHoa->getMaHang()) == strMaThuong)
+		{
+			return pHangHoa;
+		}
+	}
+	return nullptr;
 }
 DonHang* QuanLyBanHang::timDonHang(const int iSoThuTu)
 {
@@ -198,10 +200,15 @@ DonHang* QuanLyBanHang::timDonHang(const int iSoThuTu)
 
 const DonHang* QuanLyBanHang::timDonHang(const int iSoThuTu) const
 {
-	return this->m_danhSachDonHang.timDau([iSoThuTu](const DonHang& donHang)
+	for (int iIndex = 0; iIndex < this->_danhSachDonHang.getSize(); iIndex++)
 	{
-		return donHang.getSoThuTu() == iSoThuTu;
-	});
+		const DonHang* pDonHang = this->_danhSachDonHang.layTaiViTri(iIndex);
+		if (pDonHang->getSoThuTu() == iSoThuTu)
+		{
+			return pDonHang;
+		}
+	}
+	return nullptr;
 }
 
 // ==================== Menu chính ====================
@@ -222,16 +229,16 @@ void QuanLyBanHang::hienThiHangHoa() const
 {
 	TienIch::xoaManHinh();
 	TienIch::inThongBao("=== DANH SÁCH HÀNG HÓA ===", MAU_VANG);
-	if (this->m_danhSachHangHoa.isEmpty())
+	if (this->_danhSachHangHoa.isEmpty())
 	{
 		TienIch::inThongBao("Hiện chưa có hàng hóa nào.", MAU_DO);
 		return;
 	}
 	HangHoa::hienThiTieuDe();
-	this->m_danhSachHangHoa.duyet([](const HangHoa& hangHoa)
+	for (int iIndex = 0; iIndex < this->_danhSachHangHoa.getSize(); iIndex++)
 	{
-		hangHoa.hienThi();
-	});
+		this->_danhSachHangHoa.layTaiViTri(iIndex)->hienThi();
+	}
 }
 void QuanLyBanHang::timKiemHangHoa() const
 {
@@ -244,19 +251,20 @@ void QuanLyBanHang::timKiemHangHoa() const
 	}
 	const string strTuKhoaThuong = TienIch::chuThuong(strTuKhoa);
 	int iSoKetQua = 0;
-	this->m_danhSachHangHoa.duyet([&strTuKhoaThuong, &iSoKetQua](const HangHoa& hangHoa)
+	for (int iIndex = 0; iIndex < this->_danhSachHangHoa.getSize(); iIndex++)
 	{
-		if (TienIch::chuThuong(hangHoa.getTenHang()).find(strTuKhoaThuong) == string::npos)
+		const HangHoa* pHangHoa = this->_danhSachHangHoa.layTaiViTri(iIndex);
+		if (TienIch::chuThuong(pHangHoa->getTenHang()).find(strTuKhoaThuong) == string::npos)
 		{
-			return;
+			continue;
 		}
 		if (iSoKetQua == 0)
 		{
 			HangHoa::hienThiTieuDe();
 		}
-		hangHoa.hienThi();
+		pHangHoa->hienThi();
 		++iSoKetQua;
-	});
+	}
 	if (iSoKetQua == 0)
 	{
 		TienIch::inLoi("Không tìm thấy hàng hóa nào có tên \"" + strTuKhoa + "\".");
